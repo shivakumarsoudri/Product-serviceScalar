@@ -1,6 +1,7 @@
 package com.example.productservice.services;
 import com.example.productservice.dtos.CreateProductRequestDto;
 import com.example.productservice.dtos.FakeStoreCreateProductDto;
+import com.example.productservice.exceptions.ProductNotFoundException;
 import com.example.productservice.models.Category;
 import com.example.productservice.dtos.FakeStoreProductDto;
 import com.example.productservice.models.Product;
@@ -20,7 +21,7 @@ this.restTemplate=restTemplate;
 }
 
     @Override
- public Product getProductDetails(Long id) {
+ public Product getProductDetails(Long id) throws ProductNotFoundException {
 //        FakeStoreProductDto responseDto =
 //                restTemplate.getForObject(
 //                        "https://fakestoreapi.com/products/1" + id,
@@ -33,6 +34,12 @@ this.restTemplate=restTemplate;
                  {  }
                      else if(responseEntity.getStatusCode()== HttpStatusCode.valueOf(500))
                      { }
+                     FakeStoreProductDto responseBody = responseEntity.getBody();
+                     if(responseBody==null)
+                     {
+                         throw new ProductNotFoundException("Product not found");
+                     }
+
                          return responseEntity.getBody().toProduct();
     }
 
